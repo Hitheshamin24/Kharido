@@ -7,12 +7,16 @@ import {
 } from "../utils/handleToken.utils.js";
 
 export const registerController = async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password, confirmPassword, role } = req.body;
 
   try {
+    if (password !== confirmPassword)
+      return res.status(400).json({
+        message: "Password do  not match",
+      });
     const userAlreadyExists = await userModel.findOne({ email });
     if (userAlreadyExists) {
-      return res.status(400).json({
+      return res.status(409).json({
         message: "User already exists with this email",
       });
     }
@@ -45,7 +49,6 @@ export const registerController = async (req, res) => {
         email: user.email,
         id: user._id,
       },
-      accessToken,
     });
   } catch (error) {
     return res.status(500).json({
@@ -59,13 +62,13 @@ export const loginController = async (req, res) => {
   try {
     const user = await userModel.findOne({ email });
     if (!user) {
-      return res.status(400).json({
+      return res.status(401).json({
         message: "invalid email or password ",
       });
     }
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
-      return res.status(400).json({
+      return res.status(401).json({
         message: "invalid email or password ",
       });
     }
@@ -135,7 +138,7 @@ export const refreshController = async (req, res) => {
         refreshToken: null,
       });
       res.clearCookie("refreshToken");
-      return res.status(400).json({
+      return res.status(401).json({
         message: "refreshToken mismatch",
       });
     }
