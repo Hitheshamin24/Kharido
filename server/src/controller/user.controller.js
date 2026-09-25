@@ -153,14 +153,39 @@ export const refreshController = async (req, res) => {
     res.cookie("refreshToken", newRefreshToken);
     return res.status(200).json({
       message: "token refreshed successfully",
-      accessToken
+      accessToken,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({
-        message: "error while generating new RefreshToken",
-        error: error.message,
-      });
+    return res.status(500).json({
+      message: "error while generating new RefreshToken",
+      error: error.message,
+    });
+  }
+};
+
+export const logoutController = async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  try {
+    if (refreshToken) {
+      await userModel.findOneAndUpdate(
+        {
+          refreshToken,
+        },
+        {
+          $unset: { refreshToken: 1 },
+        },
+      );
+    }
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+    });
+    return res.status(200).json({
+      message: "Logout successful",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: `Logout failed ${error.message}`,
+    });
   }
 };
