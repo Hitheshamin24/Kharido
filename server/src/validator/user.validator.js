@@ -29,6 +29,15 @@ export const registerValidator = [
     .bail()
     .isLength({ min: 6 })
     .withMessage("Password must be minimum 6 character"),
+  body("confirmPassword")
+    .exists()
+    .withMessage("confirmPassword is required")
+    .bail()
+    .isString()
+    .withMessage("confirmPassword must be in string format ")
+    .bail()
+    .isLength({ min: 6 })
+    .withMessage("confirmPassword must be minimum 6 character"),
   body("role")
     .optional()
     .isIn(["user", "seller"])
@@ -65,15 +74,7 @@ export const loginValidator = [
     .bail()
     .isLength({ min: 6 })
     .withMessage("Password must be minimum 6 character"),
-  body("confirmPassword")
-    .exists()
-    .withMessage("confirmPassword is required")
-    .bail()
-    .isString()
-    .withMessage("confirmPassword must be in string format ")
-    .bail()
-    .isLength({ min: 6 })
-    .withMessage("confirmPassword must be minimum 6 character"),
+
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
