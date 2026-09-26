@@ -62,3 +62,67 @@ export const productValidator = [
     next()
   },
 ];
+
+export const updateProductValidator = [
+  body("title")
+    .optional()
+    .isString()
+    .withMessage("title must be string")
+    .bail()
+    .trim()
+    .isLength({ min: 2, max: 50 })
+    .withMessage("title length should be between 2 to 50 characters")
+    .bail()
+    .isAlpha("en-US", { ignore: " -" })
+    .withMessage(
+      "title can only contain english letters, spaces and hyphens"
+    ),
+
+  body("description")
+    .optional()
+    .isString()
+    .withMessage("description must be in string")
+    .bail()
+    .trim()
+    .isLength({ min: 20, max: 500 })
+    .withMessage(
+      "description length should be between 20 to 500 characters"
+    ),
+
+  body("price")
+    .optional()
+    .isFloat({ min: 0 })
+    .withMessage("price must be a number greater than or equal to 0"),
+
+  body("sizes")
+    .optional()
+    .isArray()
+    .withMessage("sizes must be an array"),
+
+  body("sizes.*.size")
+    .optional()
+    .isString()
+    .withMessage("size must be a string")
+    .bail()
+    .trim()
+    .isIn(["XS", "S", "M", "L", "XL", "XXL"])
+    .withMessage("Size can be XS, S, M, L, XL or XXL"),
+
+  body("sizes.*.stock")
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage("stock must be an integer greater than or equal to 0"),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: errors.array(),
+      });
+    }
+
+    next();
+  },
+];
