@@ -1,5 +1,4 @@
 export const parseSize = (req, res, next) => {
-  console.log("BODY:", req.body);
   if (req.body?.sizes !== undefined) {
     try {
       req.body.sizes = JSON.parse(req.body.sizes);

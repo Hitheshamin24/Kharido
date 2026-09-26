@@ -21,32 +21,31 @@ const productSchema = new mongoose.Schema({
       validator: (images) => images.length <= 5,
       message: "A product should max 5 images ",
     },
-    price: {
-      type: Number,
-      required: true,
-    },
-    sizes: [
-      {
-        size: {
-          type: String,
-          enum: ["XS", "S", "M", "L", "XL", "XXL"],
-          required: true,
-        },
-        stock: {
-          type: Number,
-          min: 0,
-          default: 0,
-        },
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  sizes: [
+    {
+      size: {
+        type: String,
+        enum: ["XS", "S", "M", "L", "XL", "XXL"],
+        required: true,
       },
-    ],
-    seller: {
-      type: mongoose.Types.ObjectId,
-      ref: "user",
-      required: true,
+      stock: {
+        type: Number,
+        min: 0,
+        default: 0,
+      },
     },
+  ],
+  seller: {
+    type: mongoose.Types.ObjectId,
+    ref: "user",
+    required: true,
   },
 });
 
-
-const productModel=mongoose.model("products",productSchema)
-export default productModel
+const productModel = mongoose.model("products", productSchema);
+export default productModel;

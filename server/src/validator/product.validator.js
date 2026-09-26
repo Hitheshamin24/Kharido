@@ -10,11 +10,7 @@ export const productValidator = [
     .bail()
     .trim()
     .isLength({ min: 2, max: 50 })
-    .withMessage("title length should be between 2 to 50 characters")
-    .isAlpha("en-US", { ignore: " -" })
-    .withMessage(
-      "title can only contain english small case and capital case characters",
-    ),
+    .withMessage("title length should be between 2 to 50 characters"),
   body("description")
     .exists()
     .withMessage("description must be required")
@@ -54,8 +50,8 @@ export const productValidator = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(401).json({
-        message: "invalid credentials",
+      return res.status(400).json({
+        message: "Validation Failed",
         errors: errors.array(),
       });
     }
