@@ -12,42 +12,38 @@ import {
 } from "../controller/product.controller.js";
 import { authenticate } from "../middleware/user.middleware.js";
 import { authenticateSeller } from "../middleware/seller.middleware.js";
-import multer from "multer";
-import { parseSize } from "../middleware/uploadAndParse.middleware.js";
+import { parseSize, uploadImage } from "../middleware/uploadAndParse.middleware.js";
 
 const router = Router();
-export const uploadImage = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 1 * 1024 * 1024,
-    files: 5,
-  },
-});
 
 router.post(
   "/",
   authenticate,
   authenticateSeller,
-  uploadImage.array("images"),
+  uploadImage.array("images", 5),
   parseSize,
   productValidator,
-  addProductsController,
+  addProductsController
 );
+
 router.get("/", getAllProduct);
+router.get("/:id", getSingleProduct);
+
 router.put(
   "/:id",
   authenticate,
   authenticateSeller,
-  uploadImage.array("images"),
+  uploadImage.array("images", 5),
   parseSize,
   updateProductValidator,
-  updateProductController,
+  updateProductController
 );
-router.get("/:id", getSingleProduct);
+
 router.delete(
   "/:id",
   authenticate,
   authenticateSeller,
-  deleteProductController,
+  deleteProductController
 );
+
 export default router;
