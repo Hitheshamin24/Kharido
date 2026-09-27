@@ -1,0 +1,79 @@
+import { Link, useNavigate } from 'react-router'
+import { useDispatch, useSelector } from 'react-redux'
+import { logout, selectUser } from '../features/auth/state/authSlice'
+
+const KharidoLogo = () => (
+  <Link to="/" className="flex items-center gap-2">
+    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+      <span className="text-white font-bold text-sm">K</span>
+    </div>
+    <span className="font-bold text-slate-800 text-base">Kharido</span>
+    <span className="text-blue-600 font-bold text-lg leading-none">·</span>
+  </Link>
+)
+
+// ── Public / Customer navbar ──────────────────────────────────────────────────
+export const PublicNavbar = () => (
+  <nav className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+    <div className="flex items-center gap-8">
+      <KharidoLogo />
+      <Link to="/products" className="text-slate-700 font-medium text-sm hover:text-blue-600 transition-colors">
+        Products
+      </Link>
+    </div>
+    <div className="flex items-center gap-3">
+      <Link to="/login" className="text-blue-600 font-medium text-sm hover:underline">Login</Link>
+      <Link to="/register" className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+        Register
+      </Link>
+      <button className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-slate-600">
+          <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clipRule="evenodd" />
+        </svg>
+      </button>
+    </div>
+  </nav>
+)
+
+// ── Seller navbar — reads/dispatches from Redux directly ──────────────────────
+export const SellerNavbar = ({ onLogout }) => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const user     = useSelector(selectUser)
+
+  const handleLogout = () => {
+    dispatch(logout())
+    if (onLogout) onLogout()
+    navigate('/login', { replace: true })
+  }
+
+  return (
+    <nav className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+      <div className="flex items-center gap-8">
+        <KharidoLogo />
+        <Link to="/seller/products" className="text-slate-700 font-medium text-sm hover:text-blue-600 transition-colors">
+          My Products
+        </Link>
+        <Link to="/seller/products/new" className="text-slate-700 font-medium text-sm hover:text-blue-600 transition-colors">
+          + Add Product
+        </Link>
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="text-sm text-slate-600 border border-slate-200 px-3 py-1.5 rounded-lg font-medium">
+          Seller Account
+        </span>
+        <button onClick={handleLogout} className="text-slate-700 font-medium text-sm hover:text-red-600 transition-colors">
+          Logout
+        </button>
+        <button
+          className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center hover:bg-blue-700 transition-colors"
+          title={user?.name}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white">
+            <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clipRule="evenodd" />
+          </svg>
+        </button>
+      </div>
+    </nav>
+  )
+}
