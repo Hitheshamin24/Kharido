@@ -14,11 +14,12 @@ export const useAuthHook = () => {
     try {
       const email = data.email;
       const response = await loginUser(email, data.password);
-      
+
       const name = response.data.data.name;
       const role = response.data.data.role;
-      dispatch(login({ user: { email, name }, role }));
-      
+      const userId = response.data.data.id;
+      dispatch(login({ user: { userId, email, name }, role }));
+
       toast.success("Login successful!");
 
       const from = location.state?.from?.pathname;
@@ -30,7 +31,8 @@ export const useAuthHook = () => {
         });
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Invalid email or password.";
+      const errorMessage =
+        error.response?.data?.message || "Invalid email or password.";
       toast.error(errorMessage);
     }
   };
@@ -46,19 +48,33 @@ export const useAuthHook = () => {
         email,
         password: data.password,
         confirmPassword: data.confirmPassword,
-        role
+        role,
       });
 
       const responseData = response.data.data || { name, email, role };
-      dispatch(login({ user: { email: responseData.email, name: responseData.name }, role: responseData.role }));
-      
+      console.log(responseData);
+      dispatch(
+        login({
+          user: {
+            email: responseData.email,
+            name: responseData.name,
+            userId: responseData.id,
+          },
+          role: responseData.role,
+        }),
+      );
+
       toast.success("Registration successful!");
 
-      navigate(responseData.role === "seller" ? "/seller/products" : "/products", {
-        replace: true,
-      });
+      navigate(
+        responseData.role === "seller" ? "/seller/products" : "/products",
+        {
+          replace: true,
+        },
+      );
     } catch (error) {
-      const errorMessage = error.response?.data?.message || "Registration failed.";
+      const errorMessage =
+        error.response?.data?.message || "Registration failed.";
       toast.error(errorMessage);
     }
   };

@@ -9,6 +9,7 @@ import {
   getAllProduct,
   getSingleProduct,
   updateProductController,
+  getSellerProductsController,
 } from "../controller/product.controller.js";
 import { authenticate } from "../middleware/user.middleware.js";
 import { authenticateSeller } from "../middleware/seller.middleware.js";
@@ -26,6 +27,7 @@ router.post(
   addProductsController
 );
 
+router.get("/seller", authenticate, authenticateSeller, getSellerProductsController);
 router.get("/", getAllProduct);
 router.get("/:id", getSingleProduct);
 
