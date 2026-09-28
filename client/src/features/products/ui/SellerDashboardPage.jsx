@@ -5,7 +5,7 @@ import { SellerNavbar } from '../../../components/Navbar'
 import { selectAllProducts, deleteProduct, toggleStatus } from '../state/productsSlice'
 import { logout } from '../../auth/state/authSlice'
 
-// ─── Dummy stat card ──────────────────────────────────────────────────────────
+// Stat card
 const StatCard = ({ label, value, icon }) => (
   <div className="bg-white border border-slate-200 rounded-xl p-5 flex items-center justify-between">
     <div>
@@ -18,7 +18,7 @@ const StatCard = ({ label, value, icon }) => (
   </div>
 )
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// Seller dashboard page
 const SellerDashboardPage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -100,6 +100,7 @@ const SellerDashboardPage = () => {
             <span className="text-lg leading-none">+</span>
             Add Product
           </Link>
+          
         </div>
 
         {/* Stats */}

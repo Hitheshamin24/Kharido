@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-// ─── Dummy seed data ─────────────────────────────────────────────────────────
+// Dummy seed data
 const INITIAL_PRODUCTS = [
   {
     id: 1,
@@ -88,7 +88,7 @@ const INITIAL_PRODUCTS = [
   },
 ]
 
-// ─── Slice ────────────────────────────────────────────────────────────────────
+// Slice
 const productsSlice = createSlice({
   name: 'products',
   initialState: {
@@ -138,7 +138,7 @@ const productsSlice = createSlice({
 export const { addProduct, updateProduct, deleteProduct, toggleStatus, setLoading, setError } =
   productsSlice.actions
 
-// ─── Selectors ────────────────────────────────────────────────────────────────
+// Selectors
 export const selectAllProducts       = (state) => state.products.items
 export const selectPublishedProducts = (state) => state.products.items.filter((p) => p.status === 'Published')
 export const selectProductById       = (id)    => (state) => state.products.items.find((p) => p.id === id)

@@ -1,41 +1,26 @@
 import { useState } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router'
-import { useDispatch } from 'react-redux'
-import { login } from '../state/authSlice'
+import { Link } from 'react-router'
+import { useForm } from 'react-hook-form'
+import { useAuthHook } from '../hooks/useAuthHook'
 
 const LoginPage = () => {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const location = useLocation()
-
-  const [role, setRole] = useState('customer')
-  const [email, setEmail] = useState('buyer@kharido.io')
-  const [password, setPassword] = useState('password123')
+  const { handleLogin } = useAuthHook()
   const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
 
-  // Redirect back to the page they tried to visit, or role default
-  const from = location.state?.from?.pathname
+  const {
+    register,
+    handleSubmit,
+    
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: {
+      role: 'user',
+      email: 'buyer@kharido.io',
+      password: 'password123',
+    },
+  })
 
-  const handleRoleChange = (selectedRole) => {
-    setRole(selectedRole)
-    setEmail(selectedRole === 'customer' ? 'buyer@kharido.io' : 'seller@kharido.io')
-  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    await new Promise((r) => setTimeout(r, 600))
-
-    dispatch(login({ user: { email, name: email.split('@')[0] }, role }))
-    setIsLoading(false)
-
-    if (from && from !== '/login') {
-      navigate(from, { replace: true })
-    } else {
-      navigate(role === 'seller' ? '/seller/products' : '/products', { replace: true })
-    }
-  }
 
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
@@ -50,72 +35,49 @@ const LoginPage = () => {
         </div>
 
         <h1 className="text-2xl font-bold text-slate-900 text-center mb-1">Sign in to Kharido</h1>
-        <p className="text-sm text-slate-500 text-center mb-6">
-          Access your account or seller management dashboard
-        </p>
 
         {/* Role Simulator */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-slate-500 font-medium">Active Role Simulator</span>
-            <span className="text-xs text-blue-600 font-medium bg-blue-50 px-2.5 py-1 rounded-full">
-              {role === 'customer' ? 'Customer → /products' : 'Seller → /seller/products'}
-            </span>
-          </div>
-          <div className="flex rounded-lg border border-slate-200 overflow-hidden">
-            <button
-              type="button"
-              onClick={() => handleRoleChange('customer')}
-              className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
-                role === 'customer'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'bg-slate-50 text-slate-500 hover:text-slate-700'
-              }`}
-            >
-              Customer
-            </button>
-            <button
-              type="button"
-              onClick={() => handleRoleChange('seller')}
-              className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
-                role === 'seller'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'bg-slate-50 text-slate-500 hover:text-slate-700'
-              }`}
-            >
-              Seller
-            </button>
-          </div>
-        </div>
+
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
+          <input type="hidden" {...register('role')} />
+
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">Email address</label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              {...register('email', {
+                required: 'Email is required',
+                pattern: {
+                  value: /\S+@\S+\.\S+/,
+                  message: 'Please enter a valid email address',
+                },
+              })}
               placeholder="name@example.com"
-              required
               className="w-full border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
             />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+            )}
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="block text-sm font-medium text-slate-700">Password</label>
-              <button type="button" className="text-xs text-blue-600 hover:underline font-medium">
-                Forgot?
-              </button>
+
             </div>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                {...register('password', {
+                  required: 'Password is required',
+                  minLength: {
+                    value: 6,
+                    message: 'Password must be at least 6 characters',
+                  },
+                })}
                 placeholder="••••••••"
-                required
                 className="w-full border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all pr-10"
               />
               <button
@@ -135,14 +97,17 @@ const LoginPage = () => {
                 )}
               </button>
             </div>
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+            )}
           </div>
 
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isSubmitting}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-70 text-white font-semibold py-3 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 mt-2"
           >
-            {isLoading ? (
+            {isSubmitting ? (
               <>
                 <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -157,20 +122,13 @@ const LoginPage = () => {
         </form>
 
         <p className="text-center text-sm text-slate-500 mt-5">
-          Don&apos;t have an account?{' '}
+          Don't have an account?{' '}
           <Link to="/register" className="text-blue-600 font-semibold hover:underline">
             Register
           </Link>
         </p>
 
-        <div className="mt-5 bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-start gap-2.5">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-slate-500 mt-0.5 shrink-0">
-            <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clipRule="evenodd" />
-          </svg>
-          <p className="text-xs text-slate-500 font-mono">
-            Role-based routing | Customer → /products | Seller → /seller/products
-          </p>
-        </div>
+
       </div>
     </div>
   )

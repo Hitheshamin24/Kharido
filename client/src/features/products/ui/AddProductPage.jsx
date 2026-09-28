@@ -5,13 +5,13 @@ import { SellerNavbar } from '../../../components/Navbar'
 import { addProduct, updateProduct, selectProductById } from '../state/productsSlice'
 import { logout } from '../../auth/state/authSlice'
 
-// ─── Dummy categories ─────────────────────────────────────────────────────────
+// Dummy categories
 const CATEGORIES = [
   'Electronics', 'Furniture', 'Accessories',
   'Clothing', 'Sports', 'Books', 'Food & Beverages', 'Other',
 ]
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// Add product page
 const AddProductPage = ({ isEditing = false }) => {
   const dispatch  = useDispatch()
   const navigate  = useNavigate()

@@ -1,37 +1,27 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router'
-import { useDispatch } from 'react-redux'
-import { login } from '../state/authSlice'
+import { Link } from 'react-router'
+import { useForm } from 'react-hook-form'
+import { useAuthHook } from '../hooks/useAuthHook'
 
 const RegisterPage = () => {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const { handleRegister } = useAuthHook()
 
-  const [username, setUsername] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [isSeller, setIsSeller] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: {
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      isSeller: false,
+    },
+  })
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.')
-      return
-    }
-
-    setIsLoading(true)
-    await new Promise((r) => setTimeout(r, 700))
-
-    const role = isSeller ? 'seller' : 'customer'
-    dispatch(login({ user: { email, name: username }, role }))
-    setIsLoading(false)
-    navigate(role === 'seller' ? '/seller/products' : '/products', { replace: true })
-  }
+  const password = watch('password')
+  const isSeller = watch('isSeller')
 
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
@@ -50,48 +40,68 @@ const RegisterPage = () => {
           Join Kharido to explore or sell products
         </p>
 
-        {error && (
+        {errors.confirmPassword?.message && (
           <div className="mb-4 bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-2.5 rounded-lg">
-            {error}
+            {errors.confirmPassword.message}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(handleRegister)} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">Username</label>
             <input
               type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              {...register('username', {
+                required: 'Username is required',
+                minLength: {
+                  value: 2,
+                  message: 'Username must be at least 2 characters',
+                },
+              })}
               placeholder="johndoe"
-              required
               className="w-full border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
             />
+            {errors.username && (
+              <p className="text-red-500 text-xs mt-1">{errors.username.message}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">Email address</label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              {...register('email', {
+                required: 'Email address is required',
+                pattern: {
+                  value: /\S+@\S+\.\S+/,
+                  message: 'Please enter a valid email address',
+                },
+              })}
               placeholder="name@example.com"
-              required
               className="w-full border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
             />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              {...register('password', {
+                required: 'Password is required',
+                minLength: {
+                  value: 6,
+                  message: 'Password must be minimum 6 characters',
+                },
+              })}
               placeholder="••••••••"
-              required
-              minLength={6}
               className="w-full border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
             />
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+            )}
           </div>
 
           <div>
@@ -100,20 +110,24 @@ const RegisterPage = () => {
             </label>
             <input
               type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              {...register('confirmPassword', {
+                required: 'Confirm password is required',
+                validate: (value) =>
+                  value === password || 'Passwords do not match.',
+              })}
               placeholder="••••••••••"
-              required
               className="w-full border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm text-slate-800 placeholder-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
             />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>
+            )}
           </div>
 
           {/* Register as Seller Checkbox */}
           <label className="flex items-start gap-3 p-3 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors">
             <input
               type="checkbox"
-              checked={isSeller}
-              onChange={(e) => setIsSeller(e.target.checked)}
+              {...register('isSeller')}
               className="mt-0.5 w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
             />
             <div>
@@ -126,10 +140,10 @@ const RegisterPage = () => {
 
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isSubmitting}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-70 text-white font-semibold py-3 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 mt-2"
           >
-            {isLoading ? (
+            {isSubmitting ? (
               <>
                 <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -150,15 +164,6 @@ const RegisterPage = () => {
           </Link>
         </p>
 
-        <div className="mt-5 bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-start gap-2.5">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-blue-500 mt-0.5 shrink-0">
-            <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clipRule="evenodd" />
-          </svg>
-          <p className="text-xs text-slate-500 font-mono">
-            Connected to Auth API | Endpoint: /api/auth/register · Payload role:{' '}
-            <span className="text-blue-600">&quot;{isSeller ? 'seller' : 'public'}&quot;</span>
-          </p>
-        </div>
       </div>
     </div>
   )

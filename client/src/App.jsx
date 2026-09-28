@@ -1,37 +1,53 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router'
 import ProtectedRoute from './components/ProtectedRoute'
+import PublicRoute from './components/PublicRoute'
 
-// ── Auth feature ──────────────────────────────────────────────────────────────
-import LoginPage    from './features/auth/ui/LoginPage'
+// Auth routes
+import LoginPage from './features/auth/ui/LoginPage'
 import RegisterPage from './features/auth/ui/RegisterPage'
 
-// ── Products feature ──────────────────────────────────────────────────────────
-import ProductsPage         from './features/products/ui/ProductsPage'
-import SellerDashboardPage  from './features/products/ui/SellerDashboardPage'
-import AddProductPage       from './features/products/ui/AddProductPage'
+// Product routes
+import ProductsPage from './features/products/ui/ProductsPage'
+import SellerDashboardPage from './features/products/ui/SellerDashboardPage'
+import AddProductPage from './features/products/ui/AddProductPage'
+import { useDispatch, useSelector } from 'react-redux'
+import { login, selectAccessToken } from './features/auth/state/authSlice'
+import { useEffect } from 'react'
+import { useApiAuth } from './features/auth/api/authApi'
 
 const App = () => {
+
+  const accessToken = useSelector(selectAccessToken)
+  const { fetchUser: fetchUserApi } = useApiAuth()
+  const dispatch = useDispatch()
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetchUserApi()
+        console.log("Current user:", response.data.data)
+        dispatch(login({user:{ email: response.data.data.email, name: response.data.data.name}, role: response.data.data.role }))
+      } catch (error) {
+        console.error("Failed to fetch user:", error)
+      }
+    }
+    fetchUser()
+  }, [accessToken])
   return (
     <BrowserRouter>
       <Routes>
         {/* Default */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to="/products" replace />} />
 
-        {/* ── Public auth routes ───────────────────────────────── */}
-        <Route path="/login"    element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+        <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
 
-        {/* ── Customer-only ────────────────────────────────────── */}
         <Route
           path="/products"
-          element={
-            <ProtectedRoute requiredRole="customer">
-              <ProductsPage />
-            </ProtectedRoute>
-          }
-        />
+          element=
+          {<ProductsPage />
+          } />
 
-        {/* ── Seller-only ──────────────────────────────────────── */}
+        {/* Seller routes */}
         <Route
           path="/seller/products"
           element={
