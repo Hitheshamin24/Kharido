@@ -8,11 +8,16 @@ const initialState = {
 }
 
 const calculateTotals = (items) => {
-  return items.reduce((acc, item) => {
+  const totals = items.reduce((acc, item) => {
     acc.totalQuantity += item.quantity;
     acc.totalPrice += (item.price * item.quantity);
     return acc;
   }, { totalQuantity: 0, totalPrice: 0 });
+
+  
+  totals.totalPrice = Math.round(totals.totalPrice * 100) / 100;
+  
+  return totals;
 }
 
 const cartSlice = createSlice({

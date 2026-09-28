@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useApi } from '../../../shared/api/useApi'
 import {
@@ -15,26 +16,33 @@ export const useProducts = () => {
   const api = useApi()
   const all = useSelector(selectAllProducts)
   const published = useSelector(selectPublishedProducts)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const fetchAll = async () => {
+  const fetchAll = async (params = {}) => {
+    setIsLoading(true)
     try {
-      const res = await api.get('/products')
+      const res = await api.get('/products', { params })
       dispatch(setProducts(res.data.products || res.data))
       return res.data
     } catch (err) {
       console.error('Error fetching products:', err)
       throw err
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  const fetchSellerProducts = async () => {
+  const fetchSellerProducts = async (params = {}) => {
+    setIsLoading(true)
     try {
-      const res = await api.get('/products/seller')
+      const res = await api.get('/products/seller', { params })
       dispatch(setProducts(res.data.products || res.data))
       return res.data
     } catch (err) {
       console.error('Error fetching seller products:', err)
       throw err
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -91,6 +99,7 @@ export const useProducts = () => {
   return {
     all,
     published,
+    isLoading,
     fetchAll,
     fetchSellerProducts,
     fetchById,

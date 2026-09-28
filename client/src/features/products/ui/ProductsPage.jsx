@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { PublicNavbar } from "../../../components/Navbar";
 import { useProducts } from "../hooks/useProducts";
 import { selectCartItems } from "../../cart/state/cartSlice";
@@ -23,7 +23,6 @@ const StarIcon = () => (
 );
 
 const ProductCard = ({ product }) => {
-  const dispatch = useDispatch();
   const cartItems = useSelector(selectCartItems);
   const cart = useCart();
   const isInCart = cartItems.some(item => item.productId === (product._id || product.id));
@@ -79,9 +78,14 @@ const ProductCard = ({ product }) => {
                 e.preventDefault();
                 cart.open();
               } else {
-                const availableSize = product.sizes?.find(s => s.stock > 0)?.size;
-                cart.add({ product, size: availableSize });
-                cart.open();
+                if (product.sizes && product.sizes.length > 0) {
+                  // If product has sizes, navigate to details page instead of adding arbitrary size
+                  e.preventDefault();
+                  window.location.href = `/products/${product._id || product.id}`;
+                } else {
+                  cart.add({ product, size: null });
+                  cart.open();
+                }
               }
             }}
             className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-colors z-10 relative ${
@@ -98,7 +102,7 @@ const ProductCard = ({ product }) => {
                 Added
               </span>
             ) : (
-              "Add to Cart"
+              (product.sizes && product.sizes.length > 0) ? "Select Size" : "Add to Cart"
             )}
           </button>
         </div>
@@ -110,18 +114,19 @@ const ProductCard = ({ product }) => {
 // Products page
 const ProductsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const products = useProducts();
 
   useEffect(() => {
-    products.fetchAll();
-  }, []);
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    products.fetchAll({ search: debouncedSearch, page: 1, limit: 20 });
+  }, [debouncedSearch]);
 
   const allProducts = products.all || [];
-
-  const filtered = allProducts.filter((p) => {
-    if (!p.title) return false;
-    return p.title.toLowerCase().includes(searchQuery.toLowerCase());
-  });
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -167,9 +172,16 @@ const ProductsPage = () => {
         </div>
 
         {/* Product Grid */}
-        {filtered.length > 0 ? (
+        {products.isLoading ? (
+          <div className="flex justify-center py-16">
+            <svg className="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
+        ) : allProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-            {filtered.map((product) => (
+            {allProducts.map((product) => (
               <ProductCard key={product._id || product.id} product={product} />
             ))}
           </div>
