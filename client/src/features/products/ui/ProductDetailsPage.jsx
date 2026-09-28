@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router'
+import { toast } from 'react-toastify'
 import { PublicNavbar } from '../../../components/Navbar'
 import { useProducts } from '../hooks/useProducts'
 import { selectCartItems } from '../../cart/state/cartSlice'
+import { selectIsAuthenticated } from '../../auth/state/authSlice'
 import { useCart } from '../../cart/hooks/useCart'
 
 const ProductDetailsPage = () => {
@@ -11,6 +14,8 @@ const ProductDetailsPage = () => {
   const dispatch = useDispatch()
   const { fetchById } = useProducts()
   const cartItems = useSelector(selectCartItems)
+  const isAuthenticated = useSelector(selectIsAuthenticated)
+  const navigate = useNavigate()
   const cart = useCart()
   
   const [product, setProduct] = useState(null)
@@ -166,6 +171,11 @@ const ProductDetailsPage = () => {
             <div className="mt-auto pt-6 border-t border-slate-100 flex gap-4">
               <button
                 onClick={() => {
+                  if (!isAuthenticated) {
+                    toast.error("Please login to add items to your cart");
+                    navigate("/login");
+                    return;
+                  }
                   if (!isInCart) cart.add({ product, size: selectedSize, quantity: 1 })
                   cart.open()
                 }}

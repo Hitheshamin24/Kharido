@@ -68,7 +68,7 @@ const SellerDashboardPage = () => {
   const handleLogout = () => {
     dispatch(logout())
     logoutUser()
-    navigate('/login', { replace: true })
+    navigate('/products', { replace: true })
   }
 
   // Search filtering is now done on the server, but we can keep calculating stats based on the fetched products.

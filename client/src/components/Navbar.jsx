@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { logout, selectRole, selectUser } from '../features/auth/state/authSlice'
 import { selectCartTotalQuantity, toggleCart } from '../features/cart/state/cartSlice'
 import { useApiAuth } from '../features/auth/api/authApi'
+import { toast } from 'react-toastify'
 
 const KharidoLogo = () => (
   <Link to="/" className="flex items-center gap-2">
@@ -29,7 +30,8 @@ export const PublicNavbar = () => {
       console.log(e.message)
     }
     dispatch(logout())
-    navigate('/login', { replace: true })
+    toast.success("Logged out successfully")
+    navigate('/products', { replace: true })
   }
 
   return (
@@ -99,7 +101,8 @@ export const SellerNavbar = ({ onLogout }) => {
     dispatch(logout())
     await logoutUser()
     if (onLogout) onLogout()
-    navigate('/login', { replace: true })
+    toast.success("Logged out successfully")
+    navigate('/products', { replace: true })
   }
 
   return (

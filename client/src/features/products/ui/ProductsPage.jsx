@@ -4,7 +4,10 @@ import {  useSelector } from "react-redux";
 import { PublicNavbar } from "../../../components/Navbar";
 import { useProducts } from "../hooks/useProducts";
 import { selectCartItems } from "../../cart/state/cartSlice";
+import { selectIsAuthenticated } from "../../auth/state/authSlice";
 import { useCart } from "../../cart/hooks/useCart";
+import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
 // Sub-components
 const StarIcon = () => (
@@ -24,6 +27,8 @@ const StarIcon = () => (
 
 const ProductCard = ({ product }) => {
   const cartItems = useSelector(selectCartItems);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const navigate = useNavigate();
   const cart = useCart();
   const isInCart = cartItems.some(item => item.productId === (product._id || product.id));
 
@@ -78,10 +83,17 @@ const ProductCard = ({ product }) => {
                 e.preventDefault();
                 cart.open();
               } else {
+                if (!isAuthenticated) {
+                  e.preventDefault();
+                  toast.error("Please login to add items to your cart");
+                  navigate("/login");
+                  return;
+                }
+                
                 if (product.sizes && product.sizes.length > 0) {
                   // If product has sizes, navigate to details page instead of adding arbitrary size
                   e.preventDefault();
-                  window.location.href = `/products/${product._id || product.id}`;
+                  navigate(`/products/${product._id || product.id}`);
                 } else {
                   cart.add({ product, size: null });
                   cart.open();
