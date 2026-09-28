@@ -97,7 +97,7 @@ const CartPage = () => {
                         {item.size && (
                           <p className="text-sm text-slate-500 mt-1">Size: <span className="font-medium text-slate-700">{item.size}</span></p>
                         )}
-                        <p className="text-lg font-bold text-slate-900 mt-2">${item.price.toFixed(2)}</p>
+                        <p className="text-lg font-bold text-slate-900 mt-2">₹{item.price.toFixed(2)}</p>
                       </div>
                       
                       {/* Actions */}
@@ -146,7 +146,7 @@ const CartPage = () => {
                 <div className="space-y-3 text-sm text-slate-600 mb-6 pb-6 border-b border-slate-100">
                   <div className="flex justify-between">
                     <span>Subtotal ({totalQuantity} items)</span>
-                    <span className="font-medium text-slate-900">${totalPrice.toFixed(2)}</span>
+                    <span className="font-medium text-slate-900">₹{totalPrice.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Shipping</span>
@@ -160,7 +160,7 @@ const CartPage = () => {
                 
                 <div className="flex justify-between items-center mb-8">
                   <span className="text-base font-bold text-slate-900">Total</span>
-                  <span className="text-2xl font-extrabold text-blue-600">${totalPrice.toFixed(2)}</span>
+                  <span className="text-2xl font-extrabold text-blue-600">₹{totalPrice.toFixed(2)}</span>
                 </div>
                 
                 <button 

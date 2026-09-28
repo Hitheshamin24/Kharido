@@ -12,13 +12,7 @@ const LoginPage = () => {
     handleSubmit,
     
     formState: { errors, isSubmitting },
-  } = useForm({
-    defaultValues: {
-      role: 'user',
-      email: 'buyer@kharido.io',
-      password: 'password123',
-    },
-  })
+  } = useForm()
 
 
 

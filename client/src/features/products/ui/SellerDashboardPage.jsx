@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router'
 import { useDispatch } from 'react-redux'
 import { SellerNavbar } from '../../../components/Navbar'
 import { logout } from '../../auth/state/authSlice'
+import { clearCart } from '../../cart/state/cartSlice'
 import { useProducts } from '../hooks/useProducts'
 import { useApiAuth } from '../../auth/api/authApi'
 
@@ -67,6 +68,7 @@ const SellerDashboardPage = () => {
 
   const handleLogout = () => {
     dispatch(logout())
+    dispatch(clearCart())
     logoutUser()
     navigate('/products', { replace: true })
   }
@@ -84,7 +86,7 @@ const SellerDashboardPage = () => {
       icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016 2.993 2.993 0 0 0 2.25-1.016 3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z" /></svg>,
     },
     {
-      label: 'Avg. Price Point', value: `$${avgPrice.toFixed(2)}`,
+      label: 'Avg. Price Point', value: `₹${avgPrice.toFixed(2)}`,
       icon: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg>,
     },
   ]
@@ -189,7 +191,7 @@ const SellerDashboardPage = () => {
 
                         {/* Price */}
                         <td className="py-4 px-4">
-                          <span className="text-sm font-bold text-slate-900">${product.price?.toFixed(2)}</span>
+                          <span className="text-sm font-bold text-slate-900">₹{product.price?.toFixed(2)}</span>
                         </td>
 
                         {/* Actions */}

@@ -30,9 +30,14 @@ const ProductDetailsPage = () => {
         const data = await fetchById(id)
         setProduct(data)
         if (data && data.sizes && data.sizes.length > 0) {
-          // Select first available size
-          const available = data.sizes.find(s => s.stock > 0)
-          if (available) setSelectedSize(available.size)
+          const itemInCart = cartItems.find(item => item.productId === (data._id || data.id));
+          if (itemInCart && itemInCart.size) {
+            setSelectedSize(itemInCart.size);
+          } else {
+            // Select first available size
+            const available = data.sizes.find(s => s.stock > 0)
+            if (available) setSelectedSize(available.size)
+          }
         }
       } catch (err) {
         console.error(err)
@@ -125,7 +130,7 @@ const ProductDetailsPage = () => {
             </h1>
             
             <div className="flex items-center gap-4 mb-6">
-              <span className="text-2xl font-extrabold text-blue-600">${product.price?.toFixed(2)}</span>
+              <span className="text-2xl font-extrabold text-blue-600">₹{product.price?.toFixed(2)}</span>
             </div>
 
             <div className="mb-8">

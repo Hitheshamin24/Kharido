@@ -104,7 +104,7 @@ const CartDrawer = () => {
                         >+</button>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="font-bold text-slate-900">${(item.price * item.quantity).toFixed(2)}</span>
+                        <span className="font-bold text-slate-900">₹{(item.price * item.quantity).toFixed(2)}</span>
                         <button 
                           onClick={() => cart.remove(item.itemId, item.productId, item.size)}
                           className="text-slate-400 hover:text-red-500"
@@ -127,7 +127,7 @@ const CartDrawer = () => {
           <div className="p-5 border-t border-slate-100 bg-slate-50 mt-auto">
             <div className="flex items-center justify-between mb-4">
               <span className="font-semibold text-slate-600">Subtotal</span>
-              <span className="text-xl font-bold text-slate-900">${total.toFixed(2)}</span>
+              <span className="text-xl font-bold text-slate-900">₹{total.toFixed(2)}</span>
             </div>
             <button 
               onClick={handleCheckout}

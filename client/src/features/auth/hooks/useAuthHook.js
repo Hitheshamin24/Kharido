@@ -1,14 +1,16 @@
 import { useDispatch } from "react-redux";
 import { useNavigate, useLocation } from "react-router";
-import { login } from "../state/authSlice";
+import { login, setAccessToken } from "../state/authSlice";
 import { useApiAuth } from "../api/authApi";
 import { toast } from "react-toastify";
+import { useCart } from "../../cart/hooks/useCart";
 
 export const useAuthHook = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const { loginUser, registerUser } = useApiAuth();
+  const cart = useCart();
 
   const handleLogin = async (data) => {
     try {
@@ -18,7 +20,14 @@ export const useAuthHook = () => {
       const name = response.data.data.name;
       const role = response.data.data.role;
       const userId = response.data.data.id;
+      
+      if (response.data.accessToken) {
+        dispatch(setAccessToken(response.data.accessToken));
+      }
       dispatch(login({ user: { userId, email, name }, role }));
+      
+      
+      await cart.loadCart();
 
       toast.success("Login successful!");
 
@@ -53,6 +62,9 @@ export const useAuthHook = () => {
 
       const responseData = response.data.data || { name, email, role };
       console.log(responseData);
+      if (response.data.accessToken) {
+        dispatch(setAccessToken(response.data.accessToken));
+      }
       dispatch(
         login({
           user: {
@@ -63,6 +75,8 @@ export const useAuthHook = () => {
           role: responseData.role,
         }),
       );
+      
+      await cart.loadCart();
 
       toast.success("Registration successful!");
 

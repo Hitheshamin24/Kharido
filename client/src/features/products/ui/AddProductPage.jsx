@@ -185,10 +185,10 @@ const AddProductPage = ({ isEditing = false }) => {
 
             <div className="mb-6">
               <label className="block text-sm font-semibold text-slate-800 mb-1.5">
-                Price (USD) <span className="text-red-500">*</span>
+                Price (INR) <span className="text-red-500">*</span>
               </label>
               <div className="relative w-full sm:w-1/3">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">$</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-medium">₹</span>
                 <input
                   type="number"
                   {...register('price', { required: 'Price is required', min: 0 })}

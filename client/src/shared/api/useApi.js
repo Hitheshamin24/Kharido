@@ -5,6 +5,8 @@ import {
   setAccessToken,
   logout,
 } from "../../features/auth/state/authSlice";
+import { clearCart } from "../../features/cart/state/cartSlice";
+
 export const useApi = () => {
   const accessToken = useSelector(selectAccessToken);
   const dispatch = useDispatch();
@@ -53,6 +55,7 @@ export const useApi = () => {
             console.error("Logout API failed", logoutErr);
           }
           dispatch(logout());
+          dispatch(clearCart());
 
           return Promise.reject(refreshError);
         }

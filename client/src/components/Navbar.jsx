@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout, selectRole, selectUser } from '../features/auth/state/authSlice'
-import { selectCartTotalQuantity, toggleCart } from '../features/cart/state/cartSlice'
+import { selectCartTotalQuantity, toggleCart, clearCart } from '../features/cart/state/cartSlice'
 import { useApiAuth } from '../features/auth/api/authApi'
 import { toast } from 'react-toastify'
 
@@ -30,6 +30,7 @@ export const PublicNavbar = () => {
       console.log(e.message)
     }
     dispatch(logout())
+    dispatch(clearCart())
     toast.success("Logged out successfully")
     navigate('/products', { replace: true })
   }
@@ -99,6 +100,7 @@ export const SellerNavbar = ({ onLogout }) => {
   const { logoutUser } = useApiAuth()
   const handleLogout = async () => {
     dispatch(logout())
+    dispatch(clearCart())
     await logoutUser()
     if (onLogout) onLogout()
     toast.success("Logged out successfully")
