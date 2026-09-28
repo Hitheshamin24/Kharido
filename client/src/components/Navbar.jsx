@@ -23,7 +23,9 @@ export const PublicNavbar = () => {
   const { logoutUser } = useApiAuth()
 
   const handleLogout = async () => {
-    try { await logoutUser() } catch (e) {}
+    try { await logoutUser() } catch (e) {
+      console.log(e.message)
+    }
     dispatch(logout())
     navigate('/login', { replace: true })
   }
