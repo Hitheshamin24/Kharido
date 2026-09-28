@@ -1,7 +1,7 @@
 import app from "./app/app.js";
 import { connectDB } from "./config/db.js";
 
-connectDB();
+await connectDB();
 
 if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
   const PORT = process.env.PORT || 8000;
