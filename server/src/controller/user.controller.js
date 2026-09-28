@@ -40,6 +40,8 @@ export const registerController = async (req, res) => {
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
     return res.status(201).json({
       message: "user registered successFully",
@@ -86,6 +88,8 @@ export const loginController = async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
     return res.status(200).json({
       message: "login successFull",
@@ -137,7 +141,11 @@ export const refreshController = async (req, res) => {
       await userModel.findByIdAndUpdate(userId, {
         refreshToken: null,
       });
-      res.clearCookie("refreshToken");
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      });
       return res.status(401).json({
         message: "refreshToken mismatch",
       });
@@ -153,7 +161,11 @@ export const refreshController = async (req, res) => {
     await userModel.findByIdAndUpdate(user._id, {
       refreshToken: newRefreshToken,
     });
-    res.cookie("refreshToken", newRefreshToken);
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
     return res.status(200).json({
       message: "token refreshed successfully",
       accessToken,
@@ -182,6 +194,8 @@ export const logoutController = async (req, res) => {
     }
     res.clearCookie("refreshToken", {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
     return res.status(200).json({
       message: "Logout successful",
