@@ -10,7 +10,7 @@ export const useApi = () => {
   const dispatch = useDispatch();
 
   const api = axios.create({
-    baseURL: `${import.meta.env.VITE_FRONTEND_URL}/api`,
+    baseURL: `${import.meta.env.VITE_BACKEND_URL}/api`,
     timeout: 10000,
     withCredentials: true,
   });
@@ -28,7 +28,7 @@ export const useApi = () => {
         originalRequest._retry = true;
         try {
           const res = await axios.post(
-            `${import.meta.env.VITE_FRONTEND_URL}/api/auth/refresh-token`,
+            `${import.meta.env.VITE_BACKEND_URL}/api/auth/refresh-token`,
             {},
             { withCredentials: true }
           );
@@ -40,7 +40,7 @@ export const useApi = () => {
           // Call backend logout to clear any httpOnly cookies just in case
           try {
             await axios.post(
-              `${import.meta.env.VITE_FRONTEND_URL}/api/auth/logout`,
+              `${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`,
               {},
               { withCredentials: true }
             );
