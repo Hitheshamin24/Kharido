@@ -56,7 +56,11 @@ const SellerDashboardPage = () => {
         await productsHook.remove(id)
       } catch (err) {
         console.log(err)
-        alert("Failed to delete product")
+        if (err?.response?.data?.message === "refreshToken mismatch" || err?.message === "refreshToken mismatch") {
+          handleLogout()
+        } else {
+          alert("Failed to delete product")
+        }
       }
     }
   }
